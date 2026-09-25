@@ -57,6 +57,16 @@ backend/src/routes, controllers, services, models, repositories, middlewares, co
 - SupplyCategory: constants/SupplyCategory、types/SupplyCategory、constructors、logTemplates、errorMessages、筛选器、展示组件/控制器均有引用。
 - DispatchStatus: constants/DispatchStatus、types/DispatchStatus、constructors、logTemplates、errorMessages、筛选器、展示组件/控制器均有引用。
 - ShelterStatus: constants/ShelterStatus、types/ShelterStatus、constructors、logTemplates、errorMessages、筛选器、展示组件/控制器均有引用。
+- TransferStatus（移库单状态 IN_TRANSIT 在途 / POSTED 已入账）: constants/TransferStatus、types/TransferStatus、types/TransferOrder、constructors/TransferOrderConstructor、logTemplates.TransferOrder、errorCodes/errorMessages（TRANSFER_*）、hooks/useTransferFlow、stores/TransferOrderStore、仓库页状态徽标与筛选项、后端 constants/TransferStatus 均有引用。
+
+## 移库单（仓库间借调）业务规则
+
+- 仓库员在「仓库库存」页选择来源仓、目标仓、来源批次与数量后提交移库单。
+- **提交即冻结**：来源批次实际库存不立即扣减，只把数量记为在途冻结；可用库存 = 实际库存 − 在途冻结。
+- 提交校验（失败时提示具体原因）：来源仓与目标仓不能相同；同一来源批次已有在途移库单时拒绝；可用库存不足时拒绝。
+- **目标仓确认收货**时才把冻结数量转入目标仓库存（同物资同批次合并，否则生成新批次），同时扣减来源批次实际库存。
+- 收货时重新比对提交时记录的「来源批次实际库存 / 在途冻结总量」快照，任一已变化（如期间发生盘点报损）即**停止入账**并提示，单据保留在途状态。
+- 仓库页可查看每个仓库、每个批次的移出数量、在途数量与已入账数量。
 
 ## 为什么会牵一发动全身
 

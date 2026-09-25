@@ -1,4 +1,5 @@
 import { mockData } from "../mocks/seedData";
+import { loadCollection } from "../mocks/localStore";
 import type { InventoryBatch } from "../types/InventoryBatch";
 
 const endpoint = "/api/inventory-batch";
@@ -12,7 +13,7 @@ export async function listInventoryBatch(): Promise<InventoryBatch[]> {
       // Local mock fallback keeps the UI available during offline review.
     }
   }
-  return [...(mockData.inventoryBatch as unknown as InventoryBatch[])];
+  return loadCollection("inventoryBatch", mockData.inventoryBatch);
 }
 
 export async function saveInventoryBatch(payload: InventoryBatch) {

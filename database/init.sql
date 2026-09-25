@@ -54,6 +54,32 @@ CREATE TABLE IF NOT EXISTS dispatch_order (
   dispatched_at TEXT
 );
 
+-- 移库单：来源仓提交后冻结数量，目标仓收货后转入库存
+CREATE TABLE IF NOT EXISTS transfer_order (
+  id INTEGER PRIMARY KEY,
+  transfer_no TEXT,
+  source_warehouse_id INTEGER NOT NULL,
+  target_warehouse_id INTEGER NOT NULL,
+  status TEXT NOT NULL DEFAULT 'IN_TRANSIT',
+  created_by TEXT,
+  remark TEXT,
+  created_at TEXT,
+  shipped_at TEXT,
+  received_at TEXT
+);
+
+-- 移库单批次明细：携带提交时的账面/冻结快照，收货时据此复核来源数量是否变化
+CREATE TABLE IF NOT EXISTS transfer_line (
+  id INTEGER PRIMARY KEY,
+  transfer_order_id INTEGER NOT NULL,
+  inventory_batch_id INTEGER NOT NULL,
+  supply_item_id INTEGER NOT NULL,
+  batch_no TEXT,
+  quantity INTEGER NOT NULL,
+  source_quantity_snapshot INTEGER NOT NULL,
+  frozen_quantity_snapshot INTEGER NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS audit_log (
   id INTEGER PRIMARY KEY,
   actor TEXT,
